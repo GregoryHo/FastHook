@@ -328,7 +328,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
           RunCallback exceptionCallback = threadTask.getRunnableObject().getRunCallback();
           if (exceptionCallback != null) {
             exceptionCallback.done(exceptionRun, new EasyException(EasyException.INTERRUPTED_ERROR,
-                exceptionRun.getCommandType() + " got exception."));
+                threadTask.getRunnableObject().getThreadName() + " got exception."));
           }
 
           instance.notifyObserversOnError(exceptionRun);
@@ -356,7 +356,6 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
       WeakReference<BaseThreadManager> weakReference =
           new WeakReference<BaseThreadManager>(reference);
       instance = weakReference.get();
-
       this.runnable = runnable;
     }
 
@@ -365,7 +364,6 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
      */
     public Builder addDelayTime(long delayTime) {
       this.delayTime = delayTime;
-
       return this;
     }
 
@@ -374,7 +372,6 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
      */
     public Builder addCallback(RunCallback runCallback) {
       runnable.setRunCallback(runCallback);
-
       return this;
     }
 
