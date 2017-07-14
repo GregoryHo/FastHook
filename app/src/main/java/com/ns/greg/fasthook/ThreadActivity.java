@@ -6,6 +6,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import com.ns.greg.fasthook.threadpool.CustomThreadManager;
+import com.ns.greg.library.fasthook.BaseRunnable;
 import com.ns.greg.library.fasthook.BaseThreadTask;
 import com.ns.greg.library.fasthook.callback.RunCallback;
 import com.ns.greg.library.fasthook.exception.EasyException;
@@ -18,126 +19,129 @@ import java.lang.ref.WeakReference;
  */
 public class ThreadActivity extends AppCompatActivity {
 
-	private BaseThreadTask job0;
+  private BaseThreadTask job0;
 
-	private BaseThreadTask job1;
+  private BaseThreadTask job1;
 
-	private CustomObserver customObserver;
+  private CustomObserver customObserver;
 
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main_activity);
+  @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.main_activity);
 
-		CustomHandler customHandler = new CustomHandler(this);
+    CustomHandler customHandler = new CustomHandler(this);
 
-		// #Subscribe
-		//customObserver = new CustomObserver();
-		//CustomThreadManager.getInstance().addObserver(customObserver);
+    // #Subscribe
+    //customObserver = new CustomObserver();
+    //CustomThreadManager.getInstance().addObserver(customObserver);
 
-		// #Start
+    // #Start
+
+    CustomThreadManager.getInstance().addTask(new BaseRunnable() {
+      @Override protected BaseRun runImp() throws Exception {
+        int i = 0;
+        do {
+          System.out.println("Simple : " + ++i);
+        } while (i < 10);
+
+        return null;
+      }
+    }).addCallback(new RunCallback() {
+      @Override public void done(BaseRun baseRun, EasyException e) {
+        System.out.println("done - " + "baseRun = [" + baseRun + "], e = [" + e + "]");
+      }
+    }).start();
 
     // Sample as EasyRun0
-		CustomThreadManager.getInstance()
-				.addTask(new RunJob0())
-				.addCallback(new RunCallback() {
-					@Override
-					public void done(BaseRun baseRun, EasyException e) {
-						if (e == null) {
-							System.out.println("job0 - " + " : [" + baseRun.getCommandType() + "]");
-						} else {
-							System.out.println("job0 - " + " : [" + false + "]");
-						}
-					}
-				})
-				.start();
+    CustomThreadManager.getInstance().addTask(new RunJob0()).addCallback(new RunCallback() {
+      @Override public void done(BaseRun baseRun, EasyException e) {
+        if (e == null) {
+          System.out.println("job0 - " + " : [" + baseRun.getCommandType() + "]");
+        } else {
+          System.out.println("job0 - " + " : [" + false + "]");
+        }
+      }
+    }).start();
 
     // Sample as EasyRun1
-    job1 = CustomThreadManager.getInstance()
-				.addTask(new RunJob1())
-				.addCallback(new RunCallback() {
-					@Override
-					public void done(BaseRun baseRun, EasyException e) {
-						if (e == null) {
-							System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
-						} else {
-							System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
-						}
-					}
-				}).start();
-	}
+    job1 = CustomThreadManager.getInstance().addTask(new RunJob1()).addCallback(new RunCallback() {
+      @Override public void done(BaseRun baseRun, EasyException e) {
+        if (e == null) {
+          System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
+        } else {
+          System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
+        }
+      }
+    }).start();
+  }
 
-	@Override protected void onResume() {
-		super.onResume();
-	}
+  @Override protected void onResume() {
+    super.onResume();
+  }
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
+  @Override protected void onDestroy() {
+    super.onDestroy();
 
-		// UnSubscribe
-		if (customObserver != null) {
-			CustomThreadManager.getInstance().removeObserver(customObserver);
-		}
+    // UnSubscribe
+    if (customObserver != null) {
+      CustomThreadManager.getInstance().removeObserver(customObserver);
+    }
 
-		// Release thread manager, this also clear all observers
-		CustomThreadManager.clearInstance();
-	}
+    // Release thread manager, this also clear all observers
+    CustomThreadManager.clearInstance();
+  }
 
   /**
    * The thread manager observer
    */
-	private static class CustomObserver implements IThreadManagerInterface.ActionObserver {
+  private static class CustomObserver implements IThreadManagerInterface.ActionObserver {
 
-		@Override
-		public void onCompleted(BaseRun data) {
-			Object commandType = data.getCommandType();
-			if (commandType instanceof Boolean) {
-				System.out.println("RunJob0 : onCompleted");
-			} else if (commandType instanceof Integer) {
-				int id = (int) commandType;
-				switch (id) {
-					case CustomThreadManager.COUNT_JOB:
-						System.out.println("RunJob1 : onCompleted, counted : " + data.getResult1());
-						break;
+    @Override public void onCompleted(BaseRun data) {
+      Object commandType = data.getCommandType();
+      if (commandType instanceof Boolean) {
+        System.out.println("RunJob0 : onCompleted");
+      } else if (commandType instanceof Integer) {
+        int id = (int) commandType;
+        switch (id) {
+          case CustomThreadManager.COUNT_JOB:
+            System.out.println("RunJob1 : onCompleted, counted : " + data.getResult1());
+            break;
 
-					default:
-						break;
-				}
-			}
-		}
+          default:
+            break;
+        }
+      }
+    }
 
-		@Override
-		public void onError(BaseRun data) {
-			Object commandType = data.getCommandType();
-			if (commandType instanceof Boolean) {
-				System.out.println("RunJob0 : onError");
-			} else if (commandType instanceof Integer) {
-				int id = (int) commandType;
-				switch (id) {
-					case CustomThreadManager.COUNT_JOB:
-						System.out.println("RunJob1 : onError");
-						break;
+    @Override public void onError(BaseRun data) {
+      Object commandType = data.getCommandType();
+      if (commandType instanceof Boolean) {
+        System.out.println("RunJob0 : onError");
+      } else if (commandType instanceof Integer) {
+        int id = (int) commandType;
+        switch (id) {
+          case CustomThreadManager.COUNT_JOB:
+            System.out.println("RunJob1 : onError");
+            break;
 
-					default:
-						break;
-				}
-			}
-		}
-	}
+          default:
+            break;
+        }
+      }
+    }
+  }
 
-	private static class CustomHandler extends Handler {
+  private static class CustomHandler extends Handler {
 
-		private final ThreadActivity instance;
+    private final ThreadActivity instance;
 
-		CustomHandler(ThreadActivity reference) {
-			WeakReference<ThreadActivity> weakReference = new WeakReference<ThreadActivity>(reference);
-			instance = weakReference.get();
-		}
+    CustomHandler(ThreadActivity reference) {
+      WeakReference<ThreadActivity> weakReference = new WeakReference<ThreadActivity>(reference);
+      instance = weakReference.get();
+    }
 
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-		}
-	}
+    @Override public void handleMessage(Message msg) {
+      super.handleMessage(msg);
+    }
+  }
 }

@@ -1,9 +1,8 @@
-package com.ns.greg.library.fasthook.runnable;
+package com.ns.greg.library.fasthook;
 
 import com.ns.greg.library.fasthook.callback.RunCallback;
 import com.ns.greg.library.fasthook.exception.EasyException;
 import com.ns.greg.library.fasthook.functions.BaseRun;
-import com.ns.greg.library.fasthook.log.LogModel;
 
 /**
  * Created by Gregory on 2016/5/5.
@@ -11,9 +10,9 @@ import com.ns.greg.library.fasthook.log.LogModel;
 public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
 
   // Runnable state
-  public static final int EXCEPTION_STATUS = -1;
+  static final int EXCEPTION_STATUS = -1;
 
-  public static final int COMPLETE_STATUS = 0;
+  static final int COMPLETE_STATUS = 0;
 
   private BaseRunnableObjectMethods runnableObjectMethods;
 
@@ -29,7 +28,7 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
 
   private boolean isLog;
 
-  public interface BaseRunnableObjectMethods {
+  interface BaseRunnableObjectMethods {
 
     /**
      * Sets the Thread that this instance is running on
@@ -55,17 +54,21 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
   /**
    * Sets the runnable object methods
    */
-  public void setRunnableObjectMethods(BaseRunnableObjectMethods runnableObjectMethods) {
+  void setRunnableObjectMethods(BaseRunnableObjectMethods runnableObjectMethods) {
     this.runnableObjectMethods = runnableObjectMethods;
   }
 
-  public abstract T runImp() throws Exception;
+  protected abstract T runImp() throws Exception;
 
-  protected abstract T interruptedImp();
+  protected T interruptedImp() {
+    return null;
+  }
 
-  public abstract String getThreadName();
+  public String getThreadName() {
+    return "BaseRunnable";
+  }
 
-  public void setLog(boolean isLog) {
+  void setLog(boolean isLog) {
     this.isLog = isLog;
   }
 
@@ -113,7 +116,7 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
     }
   }
 
-  public void setExecuteStartTime(long l) {
+  void setExecuteStartTime(long l) {
     executeStartTime = l;
   }
 
@@ -125,23 +128,23 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
     }
   }
 
-  public long getExecuteStartTime() {
+  long getExecuteStartTime() {
     return executeStartTime;
   }
 
-  public void setDelayTime(long delayTime) {
+  void setDelayTime(long delayTime) {
     this.delayTime = delayTime;
   }
 
-  public T getResult() {
+  T getResult() {
     return result;
   }
 
-  public void setRunCallback(RunCallback callback) {
+  void setRunCallback(RunCallback callback) {
     this.runCallback = callback;
   }
 
-  public RunCallback getRunCallback() {
+  RunCallback getRunCallback() {
     return runCallback;
   }
 

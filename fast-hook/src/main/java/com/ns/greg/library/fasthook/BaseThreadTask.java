@@ -1,7 +1,5 @@
 package com.ns.greg.library.fasthook;
 
-import com.ns.greg.library.fasthook.runnable.BaseRunnable;
-
 /**
  * Created by Gregory on 2016/5/5.
  */
@@ -30,18 +28,18 @@ public class BaseThreadTask implements BaseRunnable.BaseRunnableObjectMethods {
    *
    * @param baseThreadManager A ThreadPool object
    */
-  public void initializeTask(BaseThreadManager baseThreadManager) {
+  void initializeTask(BaseThreadManager baseThreadManager) {
     // Sets this object's ThreadPool field to be the input argument
     sBaseThreadManager = baseThreadManager;
   }
 
   // Returns the runnable instance
-  public BaseRunnable getRunnableObject() {
+  BaseRunnable getRunnableObject() {
     return mRunnable;
   }
 
   // Sets the runnable instance
-  public void setRunnableObject(BaseRunnable runnable) {
+  void setRunnableObject(BaseRunnable runnable) {
     mRunnable = runnable;
   }
 

@@ -2,7 +2,7 @@ package com.ns.greg.fasthook;
 
 import com.ns.greg.fasthook.threadpool.CustomThreadManager;
 import com.ns.greg.library.fasthook.functions.EasyRun1;
-import com.ns.greg.library.fasthook.runnable.BaseRunnable;
+import com.ns.greg.library.fasthook.BaseRunnable;
 
 /**
  * Created by Gregory on 2017/2/10.

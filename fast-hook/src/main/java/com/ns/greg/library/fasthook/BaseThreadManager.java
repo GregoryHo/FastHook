@@ -8,7 +8,6 @@ import com.ns.greg.library.fasthook.exception.EasyException;
 import com.ns.greg.library.fasthook.functions.BaseRun;
 import com.ns.greg.library.fasthook.observer.BaseObserver;
 import com.ns.greg.library.fasthook.observer.IThreadManagerInterface;
-import com.ns.greg.library.fasthook.runnable.BaseRunnable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,7 +48,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   // Handler
   private ThreadHandler handler;
 
-  public BaseThreadManager() {
+  protected BaseThreadManager() {
     // Creates a work queue for the set of of task objects,
     // using a linked list queue that blocks when the queue is empty.
     mThreadTaskWorkQueue = new LinkedBlockingQueue<BaseThreadTask>();
@@ -74,7 +73,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
    * Handle the thread state {@link BaseRunnable#COMPLETE_STATUS}, {@link
    * BaseRunnable#EXCEPTION_STATUS}
    */
-  public void handleState(BaseThreadTask baseThreadTask, int state) {
+  void handleState(BaseThreadTask baseThreadTask, int state) {
     switch (state) {
       case BaseRunnable.COMPLETE_STATUS:
         handler.obtainMessage(state, baseThreadTask).sendToTarget();

@@ -3,7 +3,7 @@ package com.ns.greg.fasthook.threadpool;
 import com.ns.greg.library.fasthook.BaseThreadManager;
 import com.ns.greg.library.fasthook.BaseThreadTask;
 import com.ns.greg.library.fasthook.ThreadExecutorFactory;
-import com.ns.greg.library.fasthook.runnable.BaseRunnable;
+import com.ns.greg.library.fasthook.BaseRunnable;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**

@@ -1,7 +1,6 @@
-package com.ns.greg.library.fasthook.log;
+package com.ns.greg.library.fasthook;
 
 import android.util.Log;
-import com.ns.greg.library.fasthook.runnable.BaseRunnable;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -17,7 +16,7 @@ public class LogModel {
   private static final String BOTTOM_BORDER =
       "=====================================================";
 
-  public static void logStartTime(BaseRunnable runnable) {
+  static void logStartTime(BaseRunnable runnable) {
     String str = TOP_BORDER
         + "\n"
         + LEFT_BORDER
@@ -39,7 +38,7 @@ public class LogModel {
     Log.d(TAG, str);
   }
 
-  public static void logExecutedTime(BaseRunnable runnable, String status) {
+  static void logExecutedTime(BaseRunnable runnable, String status) {
     String str = TOP_BORDER
         + "\n"
         + LEFT_BORDER

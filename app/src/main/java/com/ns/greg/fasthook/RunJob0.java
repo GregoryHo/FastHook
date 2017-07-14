@@ -1,7 +1,7 @@
 package com.ns.greg.fasthook;
 
 import com.ns.greg.library.fasthook.functions.EasyRun0;
-import com.ns.greg.library.fasthook.runnable.BaseRunnable;
+import com.ns.greg.library.fasthook.BaseRunnable;
 
 /**
  * Created by Gregory on 2017/2/10.
@@ -17,11 +17,11 @@ public class RunJob0 extends BaseRunnable<EasyRun0<Boolean>> {
 
 	@Override
 	protected EasyRun0<Boolean> interruptedImp() {
-		return new EasyRun0<>(false);
+		return super.interruptedImp();
 	}
 
 	@Override
 	public String getThreadName() {
-		return "RunJob0";
+		return super.getThreadName();
 	}
 }

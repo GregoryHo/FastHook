@@ -1,7 +1,7 @@
 package com.ns.greg.fasthook.threadpool;
 
 import com.ns.greg.library.fasthook.executionHandler.BaseRejectedExecutionHandler;
-import com.ns.greg.library.fasthook.runnable.BaseRunnable;
+import com.ns.greg.library.fasthook.BaseRunnable;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
