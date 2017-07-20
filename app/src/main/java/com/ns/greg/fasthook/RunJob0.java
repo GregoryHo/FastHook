@@ -22,6 +22,6 @@ public class RunJob0 extends BaseRunnable<EasyRun0<Boolean>> {
 
 	@Override
 	public String getThreadName() {
-		return super.getThreadName();
+		return "SleepJob";
 	}
 }

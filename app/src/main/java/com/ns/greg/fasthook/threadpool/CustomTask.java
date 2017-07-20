@@ -6,9 +6,9 @@ import com.ns.greg.library.fasthook.BaseRunnable;
 /**
  * Created by Gregory on 2016/5/30.
  */
-public class CustomTask extends BaseThreadTask {
+class CustomTask extends BaseThreadTask {
 
-  public CustomTask(BaseRunnable runnable) {
+  CustomTask(BaseRunnable runnable) {
     super(runnable);
   }
 }

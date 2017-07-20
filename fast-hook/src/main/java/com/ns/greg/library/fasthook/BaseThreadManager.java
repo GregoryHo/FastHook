@@ -8,6 +8,9 @@ import com.ns.greg.library.fasthook.exception.EasyException;
 import com.ns.greg.library.fasthook.functions.BaseRun;
 import com.ns.greg.library.fasthook.observer.BaseObserver;
 import com.ns.greg.library.fasthook.observer.IThreadManagerInterface;
+import com.orhanobut.logger.AndroidLogAdapter;
+import com.orhanobut.logger.Logger;
+import com.orhanobut.logger.PrettyFormatStrategy;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -61,6 +64,11 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
 
     // Creates a handler for subscribe at UI thread
     handler = new ThreadHandler(this, Looper.getMainLooper());
+
+    Logger.addLogAdapter(new AndroidLogAdapter(PrettyFormatStrategy.newBuilder()
+        .methodCount(0)
+        .tag(mThreadPool.getClass().getSimpleName())
+        .build()));
   }
 
   /**

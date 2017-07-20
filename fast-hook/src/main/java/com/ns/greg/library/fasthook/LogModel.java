@@ -1,6 +1,6 @@
 package com.ns.greg.library.fasthook;
 
-import android.util.Log;
+import com.orhanobut.logger.Logger;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -10,61 +10,31 @@ import java.util.Locale;
 
 public class LogModel {
 
-  private static final String TAG = "FAST-HOOK";
-  private static final String TOP_BORDER = "=====================================================";
-  private static final String LEFT_BORDER = "|| ";
-  private static final String BOTTOM_BORDER =
-      "=====================================================";
-
   static void logStartTime(BaseRunnable runnable) {
-    String str = TOP_BORDER
-        + "\n"
-        + LEFT_BORDER
-        + "Runnable : "
+    Logger.d("Runnable:["
         + runnable.getThreadName()
         + "_"
         + runnable.hashCode()
-        + "\n"
-        + LEFT_BORDER
-        + "Status : "
-        + "[START]"
-        + "\n"
-        + LEFT_BORDER
-        + "Time : "
+        + "], Status:[START]"
+        + ", Start Time:["
         + getCurrentTime()
-        + "\n"
-        + BOTTOM_BORDER;
-
-    Log.d(TAG, str);
+        + "]");
   }
 
   static void logExecutedTime(BaseRunnable runnable, String status) {
-    String str = TOP_BORDER
-        + "\n"
-        + LEFT_BORDER
-        + "Runnable : "
+    Logger.d("Runnable:["
         + runnable.getThreadName()
         + "_"
         + runnable.hashCode()
-        + "\n"
-        + LEFT_BORDER
-        + "Status : "
+        + "], Status:"
         + "["
         + status
         + "]"
-        + "\n"
-        + LEFT_BORDER
-        + "Time : "
+        + ", End Time:["
         + getCurrentTime()
-        + "\n"
-        + LEFT_BORDER
-        + "Executed time : "
+        + "], Executed time:["
         + (System.currentTimeMillis() - runnable.getExecuteStartTime())
-        + " ms"
-        + "\n"
-        + BOTTOM_BORDER;
-
-    Log.d(TAG, str);
+        + "]");
   }
 
   private static String getCurrentTime() {

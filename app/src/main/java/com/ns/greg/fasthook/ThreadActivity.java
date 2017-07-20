@@ -35,23 +35,6 @@ public class ThreadActivity extends AppCompatActivity {
     //customObserver = new CustomObserver();
     //CustomThreadManager.getInstance().addObserver(customObserver);
 
-    // #Start
-
-    CustomThreadManager.getInstance().addTask(new BaseRunnable() {
-      @Override protected BaseRun runImp() throws Exception {
-        int i = 0;
-        do {
-          System.out.println("Simple : " + ++i);
-        } while (i < 10);
-
-        return null;
-      }
-    }).addCallback(new RunCallback() {
-      @Override public void done(BaseRun baseRun, EasyException e) {
-        System.out.println("done - " + "baseRun = [" + baseRun + "], e = [" + e + "]");
-      }
-    }).start();
-
     // Sample as EasyRun0
     CustomThreadManager.getInstance().addTask(new RunJob0()).addCallback(new RunCallback() {
       @Override public void done(BaseRun baseRun, EasyException e) {
@@ -70,6 +53,24 @@ public class ThreadActivity extends AppCompatActivity {
           System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
         } else {
           System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
+        }
+      }
+    }).start();
+
+    CustomThreadManager.getInstance().addTask(new BaseRunnable() {
+      @Override protected BaseRun runImp() throws Exception {
+        for (int i = 'a'; i <= 'z'; i++) {
+          System.out.println((char) i);
+        }
+
+        return null;
+      }
+    }).addDelayTime(2000).addCallback(new RunCallback() {
+      @Override public void done(BaseRun baseRun, EasyException e) {
+        if (e == null) {
+          System.out.println("job2 - " + " : [" + baseRun + "]");
+        } else {
+          System.out.println("job2 - " + " : [" + false + "]");
         }
       }
     }).start();
