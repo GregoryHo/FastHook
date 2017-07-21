@@ -38,12 +38,12 @@ public class LogModel {
         + "\n"
         + HORIZONTAL_LINE
         + " "
-        + "Runnable:["
+        + "Runnable: ["
         + runnable.getThreadName()
         + "_"
         + runnable.hashCode()
-        + "], Status:[START]"
-        + ", Start Time:["
+        + "], Status: [START]"
+        + ", Start Time: ["
         + getCurrentTime()
         + "]"
         + "\n"
@@ -61,19 +61,19 @@ public class LogModel {
         + "\n"
         + HORIZONTAL_LINE
         + " "
-        + "Runnable:["
+        + "Runnable: ["
         + runnable.getThreadName()
         + "_"
         + runnable.hashCode()
-        + "], Status:"
+        + "], Status: "
         + "["
         + status
         + "]"
-        + ", End Time:["
+        + ", End Time: ["
         + getCurrentTime()
-        + "], Executed time:["
+        + "], Executed time: ["
         + (System.currentTimeMillis() - runnable.getExecuteStartTime())
-        + "]"
+        + "ms]"
         + "\n"
         + BOTTOM_BORDER);
   }
