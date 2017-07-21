@@ -152,8 +152,7 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
     return "WorkThread : "
         + Thread.currentThread().getName()
         + ", id : "
-        + Thread.currentThread()
-        .getId()
+        + Thread.currentThread().getId()
         + ", priority : "
         + Thread.currentThread().getPriority()
         + ", group : "

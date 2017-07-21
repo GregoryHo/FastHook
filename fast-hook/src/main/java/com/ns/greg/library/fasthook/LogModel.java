@@ -1,6 +1,6 @@
 package com.ns.greg.library.fasthook;
 
-import com.orhanobut.logger.Logger;
+import android.util.Log;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -10,19 +10,58 @@ import java.util.Locale;
 
 public class LogModel {
 
+  private static final String TAG = "FAST-HOOk";
+
+  /**
+   * Drawing toolbox, reference from Logger by Orhan Obut
+   */
+  private static final char TOP_LEFT_CORNER = '┌';
+  private static final char BOTTOM_LEFT_CORNER = '└';
+  private static final char MIDDLE_CORNER = '├';
+  private static final char HORIZONTAL_LINE = '│';
+  private static final String DOUBLE_DIVIDER =
+      "────────────────────────────────────────────────────────";
+  private static final String SINGLE_DIVIDER =
+      "┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄";
+  private static final String TOP_BORDER = TOP_LEFT_CORNER + DOUBLE_DIVIDER + DOUBLE_DIVIDER;
+  private static final String BOTTOM_BORDER = BOTTOM_LEFT_CORNER + DOUBLE_DIVIDER + DOUBLE_DIVIDER;
+  private static final String MIDDLE_BORDER = MIDDLE_CORNER + SINGLE_DIVIDER + SINGLE_DIVIDER;
+
   static void logStartTime(BaseRunnable runnable) {
-    Logger.d("Runnable:["
+    Log.d(TAG, TOP_BORDER
+        + "\n"
+        + HORIZONTAL_LINE
+        + " "
+        + Thread.currentThread().getName()
+        + "\n"
+        + MIDDLE_BORDER
+        + "\n"
+        + HORIZONTAL_LINE
+        + " "
+        + "Runnable:["
         + runnable.getThreadName()
         + "_"
         + runnable.hashCode()
         + "], Status:[START]"
         + ", Start Time:["
         + getCurrentTime()
-        + "]");
+        + "]"
+        + "\n"
+        + BOTTOM_BORDER);
   }
 
   static void logExecutedTime(BaseRunnable runnable, String status) {
-    Logger.d("Runnable:["
+    Log.d(TAG, TOP_BORDER
+        + "\n"
+        + HORIZONTAL_LINE
+        + " "
+        + Thread.currentThread().getName()
+        + "\n"
+        + MIDDLE_BORDER
+        + "\n"
+        + HORIZONTAL_LINE
+        + " "
+        + "Runnable:["
         + runnable.getThreadName()
         + "_"
         + runnable.hashCode()
@@ -34,7 +73,9 @@ public class LogModel {
         + getCurrentTime()
         + "], Executed time:["
         + (System.currentTimeMillis() - runnable.getExecuteStartTime())
-        + "]");
+        + "]"
+        + "\n"
+        + BOTTOM_BORDER);
   }
 
   private static String getCurrentTime() {
