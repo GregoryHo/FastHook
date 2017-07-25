@@ -84,10 +84,6 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
         setExecuteStartTime(System.currentTimeMillis());
       }
 
-      if (isLog) {
-        LogModel.logStartTime(this);
-      }
-
       // Set thread priority
       runnableObjectMethods.setThread(Thread.currentThread(), 5);
 
@@ -107,7 +103,7 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
       isException = false;
 
       if (isLog) {
-        LogModel.logExecutedTime(this, state == COMPLETE_STATUS ? "COMPLETED" : "INTERRUPTED");
+        LogModel.logMessage(this, state == COMPLETE_STATUS ? "COMPLETED" : "INTERRUPTED");
       }
 
       if (runnableObjectMethods != null) {
