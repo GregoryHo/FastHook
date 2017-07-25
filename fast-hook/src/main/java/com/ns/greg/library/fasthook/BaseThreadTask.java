@@ -34,7 +34,7 @@ public class BaseThreadTask implements BaseRunnable.BaseRunnableObjectMethods {
   }
 
   // Returns the runnable instance
-  BaseRunnable getRunnableObject() {
+  public BaseRunnable getRunnableObject() {
     return mRunnable;
   }
 
