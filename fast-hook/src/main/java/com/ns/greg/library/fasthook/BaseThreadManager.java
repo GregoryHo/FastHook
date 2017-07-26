@@ -101,7 +101,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     // Gets a task from the pool of tasks, returning null if the pool is empty
     BaseThreadTask threadTask = mThreadTaskWorkQueue.poll();
 
-    // If the queue was empty, create a new task instead.
+    // If the queue was empty, create a new task instead
     if (threadTask == null) {
       threadTask = createBaseThreadTask(taskOption.runnable);
     } else {
@@ -133,10 +133,8 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   public void removeWork(BaseThreadTask threadTask) {
     // If the Thread object still exists
     if (threadTask != null) {
-
       //Locks on this class to ensure that other processes aren't mutating Threads.
       synchronized (this) {
-
         // Gets the Thread that the downloader task is running on
         Thread thread = threadTask.getThread();
 
@@ -162,15 +160,12 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     // Populates the array with the task objects in the queue
     mWorkQueue.toArray(taskArray);
 
-    // Stores the array length in order to iterate over the array
-    int taskArrayLen = taskArray.length;
-
     // Locks on the singleton to ensure that other processes aren't mutating Threads, then
     // iterates over the array of tasks and interrupts the task's current Thread.
     synchronized (this) {
       // Iterates over the array of tasks
-      for (int taskArrayIndex = 0; taskArrayIndex < taskArrayLen; taskArrayIndex++) {
-        mWorkQueue.remove(taskArray[taskArrayIndex]);
+      for (BaseRunnable aTaskArray : taskArray) {
+        mWorkQueue.remove(aTaskArray);
       }
     }
   }
@@ -371,7 +366,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     }
 
     /**
-     * Task call back, received this at [UI THREAD].
+     * Task call back, received this at [UI THREAD]
      */
     @SuppressWarnings("unchecked") public Builder<U> addCallback(RunCallback<U> runCallback) {
       runnable.setRunCallback(runCallback);
