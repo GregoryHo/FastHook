@@ -7,23 +7,15 @@ package com.ns.greg.library.fasthook.functions;
 /**
  * A zero-argument action.
  */
-public class EasyRun0<C> implements BaseRun {
+public class EasyRun0<T> implements BaseRun {
 
-  private C c;
+  private T t;
 
-  public EasyRun0(C c) {
-    this.c = c;
+  public EasyRun0(T t) {
+    this.t = t;
   }
 
-  @Override public C getCommandType() {
-    return c;
-  }
-
-  @Override public Object getResult1() {
-    return null;
-  }
-
-  @Override public Object getResult2() {
-    return null;
+  @Override public T getCommandType() {
+    return t;
   }
 }

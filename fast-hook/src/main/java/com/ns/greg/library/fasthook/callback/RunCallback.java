@@ -6,7 +6,7 @@ import com.ns.greg.library.fasthook.functions.BaseRun;
 /**
  * Created by Gregory on 2017/3/13.
  */
-public interface RunCallback extends EasyCallback2<BaseRun, EasyException> {
+public interface RunCallback<T extends BaseRun> extends EasyCallback2<T, EasyException> {
 
-  @Override void done(BaseRun baseRun, EasyException e);
+  @Override void done(T baseRun, EasyException e);
 }

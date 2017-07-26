@@ -11,6 +11,8 @@ import com.ns.greg.library.fasthook.BaseThreadTask;
 import com.ns.greg.library.fasthook.callback.RunCallback;
 import com.ns.greg.library.fasthook.exception.EasyException;
 import com.ns.greg.library.fasthook.functions.BaseRun;
+import com.ns.greg.library.fasthook.functions.EasyRun0;
+import com.ns.greg.library.fasthook.functions.EasyRun1;
 import com.ns.greg.library.fasthook.observer.IThreadManagerInterface;
 import java.lang.ref.WeakReference;
 
@@ -32,32 +34,48 @@ public class ThreadActivity extends AppCompatActivity {
     CustomHandler customHandler = new CustomHandler(this);
 
     // #Subscribe
-    //customObserver = new CustomObserver();
-    //CustomThreadManager.getInstance().addObserver(customObserver);
+    customObserver = new CustomObserver();
+    CustomThreadManager.getInstance().addObserver(customObserver);
 
     // Sample as EasyRun0
-    CustomThreadManager.getInstance().addTask(new RunJob0()).addCallback(new RunCallback() {
-      @Override public void done(BaseRun baseRun, EasyException e) {
-        if (e == null) {
-          System.out.println("job0 - " + " : [" + baseRun.getCommandType() + "]");
-        } else {
-          System.out.println("job0 - " + " : [" + false + "]");
-        }
-      }
-    }).start();
+    CustomThreadManager.getInstance()
+        .addTask(new RunJob0())
+        .addCallback(new RunCallback<EasyRun0<Boolean>>() {
+          @Override public void done(EasyRun0<Boolean> baseRun, EasyException e) {
+            if (e == null) {
+              System.out.println("job0 - " + " : [" + baseRun.getCommandType() + "]");
+            } else {
+              System.out.println("job0 - " + " : [" + false + "]");
+            }
+          }
+        })
+        .start();
 
     // Sample as EasyRun1
-    job1 = CustomThreadManager.getInstance().addTask(new RunJob1()).addCallback(new RunCallback() {
-      @Override public void done(BaseRun baseRun, EasyException e) {
-        if (e == null) {
-          System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
-        } else {
-          System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
-        }
-      }
-    }).start();
+    job1 = CustomThreadManager.getInstance()
+        .addTask(new RunJob1())
+        .addCallback(new RunCallback<EasyRun1<Integer, Integer>>() {
+          @Override public void done(EasyRun1<Integer, Integer> baseRun, EasyException e) {
+            if (e == null) {
+              System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
+            } else {
+              System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
+            }
+          }
+        })
+        .start();
 
-    CustomThreadManager.getInstance().addTask(new BaseRunnable() {
+    CustomThreadManager.getInstance().addTask(new BaseRunnable<EasyRun0<Boolean>>() {
+      @Override protected EasyRun0<Boolean> runImp() throws Exception {
+        return null;
+      }
+    }).addCallback(new RunCallback<EasyRun0<Boolean>>() {
+      @Override public void done(EasyRun0<Boolean> baseRun, EasyException e) {
+
+      }
+    });
+
+    CustomThreadManager.getInstance().addTask(new BaseRunnable<BaseRun>() {
       @Override protected BaseRun runImp() throws Exception {
         for (int i = 'a'; i <= 'z'; i++) {
           System.out.println((char) i);
@@ -65,7 +83,7 @@ public class ThreadActivity extends AppCompatActivity {
 
         return null;
       }
-    }).addDelayTime(2000).addCallback(new RunCallback() {
+    }).addDelayTime(2000).addCallback(new RunCallback<BaseRun>() {
       @Override public void done(BaseRun baseRun, EasyException e) {
         if (e == null) {
           System.out.println("job2 - " + " : [" + baseRun + "]");
@@ -105,7 +123,8 @@ public class ThreadActivity extends AppCompatActivity {
         int id = (int) commandType;
         switch (id) {
           case CustomThreadManager.COUNT_JOB:
-            System.out.println("RunJob1 : onCompleted, counted : " + data.getResult1());
+            System.out.println(
+                "RunJob1 : onCompleted, counted : " + ((EasyRun1) data).getResult1());
             break;
 
           default:

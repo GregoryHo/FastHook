@@ -24,7 +24,7 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
 
   private T result;
 
-  private RunCallback runCallback;
+  private RunCallback<T> runCallback;
 
   private boolean isLog;
 
@@ -136,11 +136,11 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
     return result;
   }
 
-  void setRunCallback(RunCallback callback) {
+  void setRunCallback(RunCallback<T> callback) {
     this.runCallback = callback;
   }
 
-  RunCallback getRunCallback() {
+  RunCallback<T> getRunCallback() {
     return runCallback;
   }
 

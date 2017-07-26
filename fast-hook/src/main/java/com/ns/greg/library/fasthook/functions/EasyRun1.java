@@ -7,29 +7,25 @@ package com.ns.greg.library.fasthook.functions;
 /**
  * A two-argument action.
  *
- * @param <C> the first argument for command type
+ * @param <T> the first argument for command type
  * @param <R1> the second argument type for return object.
  */
-public class EasyRun1<C, R1> implements BaseRun {
+public class EasyRun1<T, R1> implements BaseRun {
 
-  private C c;
+  private T t;
 
   private R1 r1;
 
-  public EasyRun1(C c, R1 r1) {
-    this.c = c;
+  public EasyRun1(T t, R1 r1) {
+    this.t = t;
     this.r1 = r1;
   }
 
-  @Override public C getCommandType() {
-    return c;
+  @Override public T getCommandType() {
+    return t;
   }
 
-  @Override public R1 getResult1() {
+  public R1 getResult1() {
     return r1;
-  }
-
-  @Override public Object getResult2() {
-    return null;
   }
 }

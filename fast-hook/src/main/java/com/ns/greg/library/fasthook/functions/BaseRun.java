@@ -7,8 +7,4 @@ package com.ns.greg.library.fasthook.functions;
 public interface BaseRun {
 
   Object getCommandType();
-
-  Object getResult1();
-
-  Object getResult2();
 }

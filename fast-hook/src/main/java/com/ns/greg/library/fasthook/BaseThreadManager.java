@@ -93,11 +93,11 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   /**
    * @param runnable runnable object
    */
-  public Builder addTask(BaseRunnable runnable) {
-    return new Builder(this, runnable);
+  public <U extends BaseRun> Builder<U> addTask(BaseRunnable<U> runnable) {
+    return new Builder<>(this, runnable);
   }
 
-  private BaseThreadTask startTask(Builder taskOption) {
+  private <U extends BaseRun> BaseThreadTask startTask(Builder<U> taskOption) {
     // Gets a task from the pool of tasks, returning null if the pool is empty
     BaseThreadTask threadTask = mThreadTaskWorkQueue.poll();
 
@@ -303,26 +303,31 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
       instance = weakReference.get();
     }
 
-    @Override public void handleMessage(Message inputMessage) {
+    @SuppressWarnings("unchecked") @Override public void handleMessage(Message inputMessage) {
       super.handleMessage(inputMessage);
 
       BaseThreadTask threadTask = (BaseThreadTask) inputMessage.obj;
       switch (inputMessage.what) {
         case BaseRunnable.COMPLETE_STATUS:
           BaseRun completeRun = threadTask.getRunnableObject().getResult();
+          if (completeRun != null) {
+            instance.notifyObserversOnCompleted(completeRun);
+          }
 
           RunCallback completeCallback = threadTask.getRunnableObject().getRunCallback();
           if (completeCallback != null) {
             completeCallback.done(completeRun, null);
           }
 
-          instance.notifyObserversOnCompleted(completeRun);
           instance.recycleTask(threadTask);
 
           break;
 
         case BaseRunnable.EXCEPTION_STATUS:
           BaseRun exceptionRun = threadTask.getRunnableObject().getResult();
+          if (exceptionRun != null) {
+            instance.notifyObserversOnError(exceptionRun);
+          }
 
           RunCallback exceptionCallback = threadTask.getRunnableObject().getRunCallback();
           if (exceptionCallback != null) {
@@ -330,7 +335,6 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
                 threadTask.getRunnableObject().getThreadName() + " got exception."));
           }
 
-          instance.notifyObserversOnError(exceptionRun);
           instance.recycleTask(threadTask);
 
           break;
@@ -343,15 +347,15 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     }
   }
 
-  public static final class Builder {
+  public static final class Builder<U extends BaseRun> {
 
     private BaseThreadManager instance;
 
-    private BaseRunnable runnable;
+    private BaseRunnable<U> runnable;
 
     private long delayTime = 0;
 
-    private Builder(BaseThreadManager reference, BaseRunnable runnable) {
+    private Builder(BaseThreadManager reference, BaseRunnable<U> runnable) {
       WeakReference<BaseThreadManager> weakReference =
           new WeakReference<BaseThreadManager>(reference);
       instance = weakReference.get();
@@ -361,7 +365,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     /**
      * Sets delay time as unit MILLISECONDS
      */
-    public Builder addDelayTime(long delayTime) {
+    public Builder<U> addDelayTime(long delayTime) {
       this.delayTime = delayTime;
       return this;
     }
@@ -369,7 +373,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     /**
      * Task call back, received this at [UI THREAD].
      */
-    public Builder addCallback(RunCallback runCallback) {
+    @SuppressWarnings("unchecked") public Builder<U> addCallback(RunCallback<U> runCallback) {
       runnable.setRunCallback(runCallback);
       return this;
     }

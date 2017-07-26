@@ -66,7 +66,7 @@ public class BaseThreadTask implements BaseRunnable.BaseRunnableObjectMethods {
   }
 
   // Delegates handling the current state of the task to the PhotoManager object
-  void handleState(int state) {
+  private void handleState(int state) {
     sBaseThreadManager.handleState(this, state);
   }
 
