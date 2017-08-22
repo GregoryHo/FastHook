@@ -3,14 +3,14 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 // Library version
-version = "1.1.13"
+version = "1.1.14"
 android {
-  compileSdkVersion 24
-  buildToolsVersion '25.0.0'
+  compileSdkVersion 25
+  buildToolsVersion '25.0.3'
 
   defaultConfig {
     minSdkVersion 16
-    targetSdkVersion 24
+    targetSdkVersion 25
     versionCode 1
     versionName version
   }
@@ -27,7 +27,7 @@ def siteUrl = 'https://github.com/GregoryHo/FastHook'
 // git repository url
 def gitUrl = 'https://github.com/GregoryHo/FastHook.git'
 // Maven Group ID for the artifact，
-group = "greg.library.fasthook"
+group = "greg.ns.library"
 install {
   repositories.mavenInstaller {
     // This generates POM.xml with proper parameters
@@ -94,7 +94,6 @@ bintray {
 
 dependencies {
   testCompile 'junit:junit:4.12'
-
   androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
