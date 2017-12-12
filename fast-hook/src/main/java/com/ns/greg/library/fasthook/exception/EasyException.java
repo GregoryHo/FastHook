@@ -6,9 +6,7 @@ package com.ns.greg.library.fasthook.exception;
 public class EasyException extends Exception {
 
   public static final int OTHER_CAUSE = -1;
-
   public static final int RUNNABLE_OBJECT_METHOD_ERROR = 1;
-
   public static final int INTERRUPTED_ERROR = 2;
 
   private int code;

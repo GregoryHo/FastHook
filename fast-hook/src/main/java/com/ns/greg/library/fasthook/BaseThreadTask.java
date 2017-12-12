@@ -7,16 +7,10 @@ public class BaseThreadTask implements BaseRunnable.BaseRunnableObjectMethods {
 
   // The Thread on which this task is currently running.
   private Thread mCurrentThread;
-
-  /**
-   * Fields containing references to the two runnable objects that handle downloading and
-   * decoding of the image.
-   */
+  // Fields containing references to the two runnable objects that handle downloading and
+  // decoding of the image.
   private BaseRunnable mRunnable;
-
-  /**
-   * An object that contains the ThreadPool singleton.
-   */
+  // An object that contains the ThreadPool singleton.
   private static BaseThreadManager sBaseThreadManager;
 
   public BaseThreadTask(BaseRunnable runnable) {

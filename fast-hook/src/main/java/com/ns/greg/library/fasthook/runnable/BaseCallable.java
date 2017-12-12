@@ -3,7 +3,8 @@ package com.ns.greg.library.fasthook.runnable;
 import java.util.concurrent.Callable;
 
 /**
- * Created by Gregory on 2016/5/24.
+ * @author Gregory
+ * @since 2016/5/24
  */
 public abstract class BaseCallable<T> implements Callable<T> {
 

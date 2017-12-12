@@ -11,21 +11,14 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
 
   // Runnable state
   static final int EXCEPTION_STATUS = -1;
-
   static final int COMPLETE_STATUS = 0;
 
   private BaseRunnableObjectMethods runnableObjectMethods;
-
   private boolean isException = false;
-
   private long executeStartTime = 0L;
-
   private long delayTime = 0L;
-
   private T result;
-
   private RunCallback<T> runCallback;
-
   private boolean isLog;
 
   interface BaseRunnableObjectMethods {
@@ -86,10 +79,8 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
 
       // Set thread priority
       runnableObjectMethods.setThread(Thread.currentThread(), 5);
-
       // Sleep delay time
       Thread.sleep(delayTime);
-
       result = runImp();
     } catch (Exception e) {
       e.printStackTrace();
@@ -98,10 +89,8 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
     } finally {
       // Get current task state
       int state = getTaskState();
-
       // Clear task state
       isException = false;
-
       if (isLog) {
         LogModel.logMessage(this, state == COMPLETE_STATUS ? "COMPLETED" : "INTERRUPTED");
       }

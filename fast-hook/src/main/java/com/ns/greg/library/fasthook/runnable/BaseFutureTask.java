@@ -4,7 +4,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
 /**
- * Created by Gregory on 2016/5/24.
+ * @author Gregory
+ * @since 2016/5/24
  */
 public abstract class BaseFutureTask<T> extends FutureTask<T> {
 

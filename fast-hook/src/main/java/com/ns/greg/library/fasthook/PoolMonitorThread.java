@@ -14,12 +14,12 @@ public class PoolMonitorThread implements Runnable {
   private int seconds;
   private boolean isMonitor = true;
 
-  public PoolMonitorThread(ThreadPoolExecutor executor, int delay) {
+  PoolMonitorThread(ThreadPoolExecutor executor, int delay) {
     this.executor = executor;
     this.seconds = delay;
   }
 
-  public void setMonitor(boolean enable) {
+  void setMonitor(boolean enable) {
     this.isMonitor = enable;
   }
 

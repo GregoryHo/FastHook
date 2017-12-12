@@ -29,22 +29,16 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
 
   // A queue of Runnable for the Thread pool
   private final BlockingQueue<Runnable> mWorkQueue;
-
   // A queue of ThreadManager tasks. Tasks are handed to a ThreadPool.
   private final Queue<BaseThreadTask> mThreadTaskWorkQueue;
-
   // A managed pool of test Thread
   private T mThreadPool;
-
   // Monitor thread
   private PoolMonitorThread monitorThread;
-
   // Is log
   private boolean isLog = true;
-
   // The observers
   private final List<BaseObserver<BaseRun>> observers = new ArrayList<>();
-
   // Handler
   private ThreadHandler handler;
 
@@ -52,13 +46,10 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     // Creates a work queue for the set of of task objects,
     // using a linked list queue that blocks when the queue is empty.
     mThreadTaskWorkQueue = new LinkedBlockingQueue<BaseThreadTask>();
-
     // Creates a new pool type according to T
     mThreadPool = createThreadPool();
-
     // Gets work queue form thread pool
     mWorkQueue = mThreadPool.getQueue();
-
     // Creates a handler for subscribe at UI thread
     handler = new ThreadHandler(this, Looper.getMainLooper());
   }
@@ -91,35 +82,47 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   protected abstract BaseThreadTask createBaseThreadTask(BaseRunnable job);
 
   /**
+   * /**
+   * Build the task with runnable using {@link Builder}
+   *
    * @param runnable runnable object
+   * @param <U> the callback interface
    */
   public <U extends BaseRun> Builder<U> addTask(BaseRunnable<U> runnable) {
     return new Builder<>(this, runnable);
   }
 
-  private <U extends BaseRun> BaseThreadTask startTask(Builder<U> taskOption) {
-    // Gets a task from the pool of tasks, returning null if the pool is empty
-    BaseThreadTask threadTask = mThreadTaskWorkQueue.poll();
+  /**
+   * Start the task
+   *
+   * @param builder the task builder
+   * @param <U> the callback interface
+   */
+  private <U extends BaseRun> BaseThreadTask startTask(Builder<U> builder) {
+    BaseThreadTask threadTask = null;
+    if (builder.useRecycleTask) {
+      // Gets a task from the pool of tasks, returning null if the pool is empty
+      threadTask = mThreadTaskWorkQueue.poll();
+    }
 
     // If the queue was empty, create a new task instead
     if (threadTask == null) {
-      threadTask = createBaseThreadTask(taskOption.runnable);
+      threadTask = createBaseThreadTask(builder.runnable);
     } else {
-      threadTask.setRunnableObject(taskOption.runnable);
+      threadTask.setRunnableObject(builder.runnable);
     }
 
-    taskOption.runnable.setExecuteStartTime(0L);
-    taskOption.runnable.setLog(isLog);
-    taskOption.runnable.setRunnableObjectMethods(threadTask);
+    builder.runnable.setExecuteStartTime(0L);
+    builder.runnable.setLog(isLog);
+    builder.runnable.setRunnableObjectMethods(threadTask);
     threadTask.initializeTask(this);
-
     if (mThreadPool instanceof ScheduledThreadPoolExecutor) {
-      taskOption.runnable.setExecuteStartTime(System.currentTimeMillis());
-      ((ScheduledThreadPoolExecutor) mThreadPool).schedule(taskOption.runnable,
-          taskOption.delayTime, TimeUnit.MILLISECONDS);
+      builder.runnable.setExecuteStartTime(System.currentTimeMillis());
+      ((ScheduledThreadPoolExecutor) mThreadPool).schedule(builder.runnable,
+          builder.delayTime, TimeUnit.MILLISECONDS);
     } else {
-      taskOption.runnable.setDelayTime(taskOption.delayTime);
-      mThreadPool.execute(taskOption.runnable);
+      builder.runnable.setDelayTime(builder.delayTime);
+      mThreadPool.execute(builder.runnable);
     }
 
     return threadTask;
@@ -345,10 +348,9 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   public static final class Builder<U extends BaseRun> {
 
     private BaseThreadManager instance;
-
     private BaseRunnable<U> runnable;
-
     private long delayTime = 0;
+    private boolean useRecycleTask = true;
 
     private Builder(BaseThreadManager reference, BaseRunnable<U> runnable) {
       WeakReference<BaseThreadManager> weakReference =
@@ -368,8 +370,13 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     /**
      * Task call back, received this at [UI THREAD]
      */
-    @SuppressWarnings("unchecked") public Builder<U> addCallback(RunCallback<U> runCallback) {
+    public Builder<U> addCallback(RunCallback<U> runCallback) {
       runnable.setRunCallback(runCallback);
+      return this;
+    }
+
+    public Builder<U> useRecycleTask(boolean useRecycleTask) {
+      this.useRecycleTask = useRecycleTask;
       return this;
     }
 

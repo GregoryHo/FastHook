@@ -5,13 +5,36 @@ package com.ns.greg.library.fasthook.observer;
  */
 public interface BaseSubject<T> {
 
+  /**
+   * Observe the task status
+   *
+   * @param observer observer
+   */
   void addObserver(BaseObserver<T> observer);
 
+  /**
+   * Remove the observer
+   *
+   * @param observer observer
+   */
   void removeObserver(BaseObserver<T> observer);
 
+  /**
+   * Clears all the observer
+   */
   void clearAllObserver();
 
+  /**
+   * Notify the observer the task is completed
+   *
+   * @param data result data
+   */
   void notifyObserversOnCompleted(T data);
 
+  /**
+   * Notify the observer the task is interrupted
+   *
+   * @param data result data
+   */
   void notifyObserversOnError(T data);
 }

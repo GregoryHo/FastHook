@@ -5,7 +5,17 @@ package com.ns.greg.library.fasthook.observer;
  */
 public interface BaseObserver<T> {
 
+  /**
+   * When task completed
+   *
+   * @param data the result data
+   */
   void onCompleted(T data);
 
+  /**
+   * When task interrupted
+   *
+   * @param data the result data
+   */
   void onError(T data);
 }

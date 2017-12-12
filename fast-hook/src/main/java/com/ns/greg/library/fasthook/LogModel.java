@@ -8,7 +8,7 @@ import java.util.Locale;
  * Created by Gregory on 2017/6/16.
  */
 
-public class LogModel {
+class LogModel {
 
   private static final String TAG = "FAST-HOOk";
 

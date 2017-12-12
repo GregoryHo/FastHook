@@ -7,11 +7,17 @@ import com.ns.greg.library.fasthook.functions.BaseRun;
  */
 public interface IThreadManagerInterface {
 
+  /**
+   * Task action subject
+   */
   interface ActionSubject extends BaseSubject<BaseRun> {
-
+    // Nothing to plug-in
   }
 
+  /**
+   * Task action observer
+   */
   interface ActionObserver extends BaseObserver<BaseRun> {
-
+    // Nothing to plug-in
   }
 }
