@@ -5,7 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**
- * Created by Gregory on 2017/6/16.
+ * @author Gregory
+ * @since 2017/6/16
  */
 
 class LogModel {

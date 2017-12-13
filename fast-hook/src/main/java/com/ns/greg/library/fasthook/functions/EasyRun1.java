@@ -1,10 +1,9 @@
 package com.ns.greg.library.fasthook.functions;
 
 /**
- * Created by Gregory on 2017/2/3.
- */
-
-/**
+ * @author Gregory
+ * @since 2017/2/3
+ *
  * A two-argument action.
  *
  * @param <T> the first argument for command type

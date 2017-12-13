@@ -1,7 +1,8 @@
 package com.ns.greg.library.fasthook.exception;
 
 /**
- * Created by Gregory on 2017/3/13.
+ * @author Gregory
+ * @since 2017/3/13
  */
 public class EasyException extends Exception {
 

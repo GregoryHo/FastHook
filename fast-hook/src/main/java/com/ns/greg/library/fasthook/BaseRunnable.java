@@ -5,7 +5,8 @@ import com.ns.greg.library.fasthook.exception.EasyException;
 import com.ns.greg.library.fasthook.functions.BaseRun;
 
 /**
- * Created by Gregory on 2016/5/5.
+ * @author Gregory
+ * @since 2016/5/5
  */
 public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
 

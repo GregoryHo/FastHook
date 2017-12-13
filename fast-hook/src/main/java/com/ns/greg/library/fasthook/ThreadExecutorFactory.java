@@ -9,7 +9,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Gregory on 2017/6/15.
+ * @author Gregory
+ * @since 2017/6/15
  */
 
 public class ThreadExecutorFactory {

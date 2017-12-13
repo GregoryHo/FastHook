@@ -1,7 +1,8 @@
 package com.ns.greg.library.fasthook;
 
 /**
- * Created by Gregory on 2016/5/5.
+ * @author Gregory
+ * @since 2016/5/5
  */
 public class BaseThreadTask implements BaseRunnable.BaseRunnableObjectMethods {
 

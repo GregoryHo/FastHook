@@ -4,7 +4,8 @@ import com.ns.greg.library.fasthook.exception.EasyException;
 import com.ns.greg.library.fasthook.functions.BaseRun;
 
 /**
- * Created by Gregory on 2017/3/13.
+ * @author Gregory
+ * @since 2017/3/13
  */
 public interface RunCallback<T extends BaseRun> extends EasyCallback2<T, EasyException> {
 

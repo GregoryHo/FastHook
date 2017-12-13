@@ -1,7 +1,8 @@
 package com.ns.greg.library.fasthook.callback;
 
 /**
- * Created by Gregory on 2017/3/13.
+ * @author Gregory
+ * @since 2017/3/13
  */
 interface EasyCallback2<T1, T2 extends Throwable> {
 

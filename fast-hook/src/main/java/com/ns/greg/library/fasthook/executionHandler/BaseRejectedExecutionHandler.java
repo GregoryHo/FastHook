@@ -4,7 +4,8 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * Created by Gregory on 2016/5/6.
+ * @author Gregory
+ * @since 2016/5/6
  */
 public abstract class BaseRejectedExecutionHandler<T extends Runnable>
     implements RejectedExecutionHandler {

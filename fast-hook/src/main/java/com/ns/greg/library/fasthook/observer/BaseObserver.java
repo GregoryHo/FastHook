@@ -1,7 +1,8 @@
 package com.ns.greg.library.fasthook.observer;
 
 /**
- * Created by Gregory on 2016/5/20.
+ * @author Gregory
+ * @since 2016/5/20
  */
 public interface BaseObserver<T> {
 
