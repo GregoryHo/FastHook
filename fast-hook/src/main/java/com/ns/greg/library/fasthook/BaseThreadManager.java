@@ -9,11 +9,11 @@ import com.ns.greg.library.fasthook.functions.BaseRun;
 import com.ns.greg.library.fasthook.observer.BaseObserver;
 import com.ns.greg.library.fasthook.observer.IThreadManagerInterface;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -22,7 +22,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Gregory on 2016/5/5.
+ * @author Gregory
+ * @since 2016/5/5
  */
 public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     implements IThreadManagerInterface.ActionSubject {
@@ -37,8 +38,8 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   private PoolMonitorThread monitorThread;
   // Is log
   private boolean isLog = true;
-  // The observers
-  private final List<BaseObserver<BaseRun>> observers = new ArrayList<>();
+  // The observers (thread-safe)
+  private final List<BaseObserver<BaseRun>> observers = new CopyOnWriteArrayList<>();
   // Handler
   private ThreadHandler handler;
 
@@ -318,7 +319,6 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
           }
 
           instance.recycleTask(threadTask);
-
           break;
 
         case BaseRunnable.EXCEPTION_STATUS:
@@ -334,7 +334,6 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
           }
 
           instance.recycleTask(threadTask);
-
           break;
 
         default:
