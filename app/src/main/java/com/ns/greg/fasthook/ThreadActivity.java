@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.ns.greg.fasthook.threadpool.CustomThreadManager;
 import com.ns.greg.library.fasthook.BaseRunnable;
 import com.ns.greg.library.fasthook.BaseThreadTask;
+import com.ns.greg.library.fasthook.HookPlugins;
 import com.ns.greg.library.fasthook.callback.RunCallback;
 import com.ns.greg.library.fasthook.exception.EasyException;
 import com.ns.greg.library.fasthook.functions.BaseRun;
@@ -42,13 +43,15 @@ public class ThreadActivity extends AppCompatActivity {
         .addTask(new RunJob0())
         .addCallback(new RunCallback<EasyRun0<Boolean>>() {
           @Override public void done(EasyRun0<Boolean> baseRun, EasyException e) {
+            System.out.println("Job0 - Thread: " + Thread.currentThread());
             if (e == null) {
-              System.out.println("job0 - " + " : [" + baseRun.getCommandType() + "]");
+              System.out.println("Job0 - " + " : [" + baseRun.getCommandType() + "]");
             } else {
-              System.out.println("job0 - " + " : [" + false + "]");
+              System.out.println("Job0 - " + " : [" + false + "]");
             }
           }
         })
+        .observerOn(HookPlugins.UI_THREAD)
         .start();
 
     // Sample as EasyRun1
@@ -56,13 +59,15 @@ public class ThreadActivity extends AppCompatActivity {
         .addTask(new RunJob1())
         .addCallback(new RunCallback<EasyRun1<Integer, Integer>>() {
           @Override public void done(EasyRun1<Integer, Integer> baseRun, EasyException e) {
+            System.out.println("Job1 - thread: " + Thread.currentThread());
             if (e == null) {
-              System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
+              System.out.println("Job1 - " + "" + " : [" + baseRun.getResult1() + "]");
             } else {
-              System.out.println("job1 - " + "" + " : [" + baseRun.getResult1() + "]");
+              System.out.println("Job1 - " + "" + " : [" + baseRun.getResult1() + "]");
             }
           }
         })
+        .observerOn(HookPlugins.CURRENT_THREAD)
         .start();
 
     CustomThreadManager.getInstance().addTask(new BaseRunnable<EasyRun0<Boolean>>() {
