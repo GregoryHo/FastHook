@@ -3,13 +3,13 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 // Library version
-version = "1.1.16"
+version = "1.1.17"
 android {
-  compileSdkVersion 25
+  compileSdkVersion 26
   buildToolsVersion '26.0.2'
   defaultConfig {
     minSdkVersion 16
-    targetSdkVersion 25
+    targetSdkVersion 26
     versionCode 1
     versionName version
   }
@@ -102,6 +102,7 @@ bintray {
 
 dependencies {
   testCompile 'junit:junit:4.12'
+  implementation 'com.android.support:appcompat-v7:26.1.0'
   androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
     exclude group: 'com.android.support', module: 'support-annotations'
   })
