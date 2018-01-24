@@ -1,5 +1,6 @@
 package com.ns.greg.library.fasthook;
 
+import com.ns.greg.library.fasthook.annotaion.ObserverOn;
 import com.ns.greg.library.fasthook.callback.RunCallback;
 import com.ns.greg.library.fasthook.exception.EasyException;
 import com.ns.greg.library.fasthook.functions.BaseRun;
@@ -10,17 +11,18 @@ import com.ns.greg.library.fasthook.functions.BaseRun;
  */
 public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
 
-  // Runnable state
+  // Runnable status
   static final int EXCEPTION_STATUS = -1;
   static final int COMPLETE_STATUS = 0;
 
   private BaseRunnableObjectMethods runnableObjectMethods;
+  private boolean isLog;
   private boolean isException = false;
   private long executeStartTime = 0L;
   private long delayTime = 0L;
   private T result;
   private RunCallback<T> runCallback;
-  private boolean isLog;
+  private int observerOn;
 
   interface BaseRunnableObjectMethods {
 
@@ -132,6 +134,14 @@ public abstract class BaseRunnable<T extends BaseRun> implements Runnable {
 
   RunCallback<T> getRunCallback() {
     return runCallback;
+  }
+
+  void setObserverOn(int observerOn) {
+    this.observerOn = observerOn;
+  }
+
+  @ObserverOn int getObserverOn() {
+    return observerOn;
   }
 
   @Override public String toString() {

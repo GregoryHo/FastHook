@@ -3,9 +3,13 @@ package com.ns.greg.library.fasthook;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import com.ns.greg.library.fasthook.annotaion.ObserverOn;
 import com.ns.greg.library.fasthook.callback.RunCallback;
 import com.ns.greg.library.fasthook.exception.EasyException;
 import com.ns.greg.library.fasthook.functions.BaseRun;
+import com.ns.greg.library.fasthook.functions.EasyRun0;
+import com.ns.greg.library.fasthook.functions.EasyRun1;
+import com.ns.greg.library.fasthook.functions.EasyRun2;
 import com.ns.greg.library.fasthook.observer.BaseObserver;
 import com.ns.greg.library.fasthook.observer.IThreadManagerInterface;
 import java.lang.ref.WeakReference;
@@ -65,14 +69,46 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
    * Handle the thread state {@link BaseRunnable#COMPLETE_STATUS}, {@link
    * BaseRunnable#EXCEPTION_STATUS}
    */
-  void handleState(BaseThreadTask baseThreadTask, int state) {
+  @SuppressWarnings("unchecked") void handleState(BaseThreadTask baseThreadTask, int state) {
+    BaseRunnable runnable = baseThreadTask.getRunnableObject();
     switch (state) {
       case BaseRunnable.COMPLETE_STATUS:
-        handler.obtainMessage(state, baseThreadTask).sendToTarget();
+        if (runnable.getObserverOn() == HookPlugins.UI_THREAD) {
+          handler.obtainMessage(state, baseThreadTask).sendToTarget();
+        } else {
+          BaseRun completeRun = runnable.getResult();
+          if (completeRun != null) {
+            notifyObserversOnCompleted(completeRun);
+          }
+
+          RunCallback completeCallback = runnable.getRunCallback();
+          if (completeCallback != null) {
+            completeCallback.done(completeRun, null);
+          }
+
+          recycleTask(baseThreadTask);
+        }
+
         break;
 
       case BaseRunnable.EXCEPTION_STATUS:
-        handler.obtainMessage(state, baseThreadTask).sendToTarget();
+        if (runnable.getObserverOn() == HookPlugins.UI_THREAD) {
+          handler.obtainMessage(state, baseThreadTask).sendToTarget();
+        } else {
+          BaseRun exceptionRun = runnable.getResult();
+          if (exceptionRun != null) {
+            notifyObserversOnError(exceptionRun);
+          }
+
+          RunCallback exceptionCallback = runnable.getRunCallback();
+          if (exceptionCallback != null) {
+            exceptionCallback.done(exceptionRun, new EasyException(EasyException.INTERRUPTED_ERROR,
+                runnable.getThreadName() + " got exception."));
+          }
+
+          recycleTask(baseThreadTask);
+        }
+
         break;
 
       default:
@@ -83,7 +119,6 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   protected abstract BaseThreadTask createBaseThreadTask(BaseRunnable job);
 
   /**
-   * /**
    * Build the task with runnable using {@link Builder}
    *
    * @param runnable runnable object
@@ -119,8 +154,8 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     threadTask.initializeTask(this);
     if (mThreadPool instanceof ScheduledThreadPoolExecutor) {
       builder.runnable.setExecuteStartTime(System.currentTimeMillis());
-      ((ScheduledThreadPoolExecutor) mThreadPool).schedule(builder.runnable,
-          builder.delayTime, TimeUnit.MILLISECONDS);
+      ((ScheduledThreadPoolExecutor) mThreadPool).schedule(builder.runnable, builder.delayTime,
+          TimeUnit.MILLISECONDS);
     } else {
       builder.runnable.setDelayTime(builder.delayTime);
       mThreadPool.execute(builder.runnable);
@@ -141,11 +176,9 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
       synchronized (this) {
         // Gets the Thread that the downloader task is running on
         Thread thread = threadTask.getThread();
-
         // If the Thread exists, posts an interrupt to it
         if (thread != null) {
           thread.interrupt();
-
           // Removes the runnable from the ThreadPool. This opens a Thread in the
           // ThreadPool's work queue, allowing a task in the queue to start.
           mThreadPool.remove(threadTask.getRunnableObject());
@@ -160,10 +193,8 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   public void cancelAllWork() {
     // Creates an array of tasks that's the same size as the task work queue
     BaseRunnable[] taskArray = new BaseRunnable[mWorkQueue.size()];
-
     // Populates the array with the task objects in the queue
     mWorkQueue.toArray(taskArray);
-
     // Locks on the singleton to ensure that other processes aren't mutating Threads, then
     // iterates over the array of tasks and interrupts the task's current Thread.
     synchronized (this) {
@@ -297,23 +328,21 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
 
     ThreadHandler(BaseThreadManager reference, Looper looper) {
       super(looper);
-      WeakReference<BaseThreadManager> weakReference =
-          new WeakReference<BaseThreadManager>(reference);
+      WeakReference<BaseThreadManager> weakReference = new WeakReference<>(reference);
       instance = weakReference.get();
     }
 
     @SuppressWarnings("unchecked") @Override public void handleMessage(Message inputMessage) {
-      super.handleMessage(inputMessage);
-
       BaseThreadTask threadTask = (BaseThreadTask) inputMessage.obj;
+      BaseRunnable runnable = threadTask.getRunnableObject();
       switch (inputMessage.what) {
         case BaseRunnable.COMPLETE_STATUS:
-          BaseRun completeRun = threadTask.getRunnableObject().getResult();
+          BaseRun completeRun = runnable.getResult();
           if (completeRun != null) {
             instance.notifyObserversOnCompleted(completeRun);
           }
 
-          RunCallback completeCallback = threadTask.getRunnableObject().getRunCallback();
+          RunCallback completeCallback = runnable.getRunCallback();
           if (completeCallback != null) {
             completeCallback.done(completeRun, null);
           }
@@ -322,15 +351,15 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
           break;
 
         case BaseRunnable.EXCEPTION_STATUS:
-          BaseRun exceptionRun = threadTask.getRunnableObject().getResult();
+          BaseRun exceptionRun = runnable.getResult();
           if (exceptionRun != null) {
             instance.notifyObserversOnError(exceptionRun);
           }
 
-          RunCallback exceptionCallback = threadTask.getRunnableObject().getRunCallback();
+          RunCallback exceptionCallback = runnable.getRunCallback();
           if (exceptionCallback != null) {
             exceptionCallback.done(exceptionRun, new EasyException(EasyException.INTERRUPTED_ERROR,
-                threadTask.getRunnableObject().getThreadName() + " got exception."));
+                runnable.getThreadName() + " got exception."));
           }
 
           instance.recycleTask(threadTask);
@@ -348,18 +377,24 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
 
     private BaseThreadManager instance;
     private BaseRunnable<U> runnable;
-    private long delayTime = 0;
-    private boolean useRecycleTask = true;
+    private long delayTime;
+    private RunCallback<U> callback;
+    private int observerOn;
+    private boolean useRecycleTask;
 
     private Builder(BaseThreadManager reference, BaseRunnable<U> runnable) {
-      WeakReference<BaseThreadManager> weakReference =
-          new WeakReference<BaseThreadManager>(reference);
-      instance = weakReference.get();
+      this.instance = new WeakReference<>(reference).get();
       this.runnable = runnable;
+      this.delayTime = 0;
+      this.callback = null;
+      this.observerOn = HookPlugins.UI_THREAD;
+      this.useRecycleTask = true;
     }
 
     /**
-     * Sets delay time as unit MILLISECONDS
+     * Sets delay time (ms)
+     *
+     * @param delayTime runnable delay time
      */
     public Builder<U> addDelayTime(long delayTime) {
       this.delayTime = delayTime;
@@ -367,13 +402,33 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     }
 
     /**
-     * Task call back, received this at [UI THREAD]
+     * Task callback, choose any callback which implements {@link BaseRun}
+     *
+     * @param callback {@link EasyRun0}, {@link EasyRun1}, {@link EasyRun2}
      */
-    public Builder<U> addCallback(RunCallback<U> runCallback) {
-      runnable.setRunCallback(runCallback);
+    public Builder<U> addCallback(RunCallback<U> callback) {
+      this.callback = callback;
       return this;
     }
 
+    /**
+     * Decides the observer or callback will received the result at
+     * which thread (UI / current)
+     *
+     * @param observerOn {@link HookPlugins#UI_THREAD}, {@link HookPlugins#CURRENT_THREAD}
+     */
+    public Builder<U> observerOn(@ObserverOn int observerOn) {
+      this.observerOn = observerOn;
+      return this;
+    }
+
+    /**
+     * Decides the manager should using the task which is poll out
+     * from pool, or just create a new task
+     *
+     * @param useRecycleTask true, using recycle task if has one,
+     * otherwise, always create new task
+     */
     public Builder<U> useRecycleTask(boolean useRecycleTask) {
       this.useRecycleTask = useRecycleTask;
       return this;
@@ -383,6 +438,8 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
      * [NOTICED] must be called, otherwise the task won't start
      */
     public BaseThreadTask start() {
+      this.runnable.setRunCallback(callback);
+      this.runnable.setObserverOn(observerOn);
       return instance.startTask(this);
     }
   }
