@@ -23,7 +23,7 @@ public interface BaseSubject<T> {
   /**
    * Clears all the observer
    */
-  void clearAllObserver();
+  void clearObservers();
 
   /**
    * Notify the observer the task is completed
