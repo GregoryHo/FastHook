@@ -38,7 +38,7 @@ before script:
   - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
 
 script:
-  - ./gradlew build jacocoTestReport assembleAndroidTest
+  - ./gradlew build jacocoTestReport test
   - ./gradlew connectedCheck
 
 after_success:
