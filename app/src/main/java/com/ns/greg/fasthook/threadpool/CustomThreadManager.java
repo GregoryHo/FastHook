@@ -32,7 +32,7 @@ public class CustomThreadManager extends BaseThreadManager<ThreadPoolExecutor> {
   }
 
   public static void clearInstance() {
-    instance.clearAllObserver();
+    instance.clearObservers();
     instance = null;
   }
 

@@ -34,7 +34,6 @@ class LogModel {
   static void logMessage(BaseRunnable runnable, String status) {
     long startTime = runnable.getExecuteStartTime();
     long endTime = System.currentTimeMillis();
-
     StringBuilder builder = new StringBuilder();
     builder.append(TOP_BORDER)
         .append(NEW_LINE)
@@ -48,7 +47,6 @@ class LogModel {
         .append(SPACE)
         .append(RUNNABLE_TITLE)
         .append(NEW_LINE);
-
     addMessage(builder, "Name: ", runnable.getThreadName() + "_" + runnable.hashCode());
     addMessage(builder, "Status: ", status);
     addMessage(builder, "Start: ", getTime(startTime));
@@ -59,7 +57,6 @@ class LogModel {
         .append('}')
         .append(NEW_LINE)
         .append(BOTTOM_BORDER);
-
     Log.d(TAG, builder.toString());
   }
 
@@ -75,7 +72,6 @@ class LogModel {
 
   private static String getTime(long time) {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
-
     return simpleDateFormat.format(time);
   }
 }
