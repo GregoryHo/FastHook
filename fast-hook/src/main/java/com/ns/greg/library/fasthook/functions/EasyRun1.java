@@ -11,9 +11,8 @@ package com.ns.greg.library.fasthook.functions;
  */
 public class EasyRun1<T, R1> implements BaseRun {
 
-  private T t;
-
-  private R1 r1;
+  private final T t;
+  private final R1 r1;
 
   public EasyRun1(T t, R1 r1) {
     this.t = t;

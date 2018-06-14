@@ -33,11 +33,11 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     implements IThreadManagerInterface.ActionSubject {
 
   // A queue of Runnable for the Thread pool
-  private final BlockingQueue<Runnable> mWorkQueue;
+  private final BlockingQueue<Runnable> blockingQueue;
   // A queue of ThreadManager tasks. Tasks are handed to a ThreadPool.
-  private final Queue<BaseThreadTask> mThreadTaskWorkQueue;
+  private final Queue<BaseThreadTask> taskQueue;
   // A managed pool of test Thread
-  private T mThreadPool;
+  private final T threadPool;
   // Monitor thread
   private PoolMonitorThread monitorThread;
   // Is log
@@ -45,16 +45,16 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   // The observers (thread-safe)
   private final List<BaseObserver<BaseRun>> observers = new CopyOnWriteArrayList<>();
   // Handler
-  private ThreadHandler handler;
+  private final ThreadHandler handler;
 
   protected BaseThreadManager() {
     // Creates a work queue for the set of of task objects,
     // using a linked list queue that blocks when the queue is empty.
-    mThreadTaskWorkQueue = new LinkedBlockingQueue<BaseThreadTask>();
+    taskQueue = new LinkedBlockingQueue<>();
     // Creates a new pool type according to T
-    mThreadPool = createThreadPool();
+    threadPool = createThreadPool();
     // Gets work queue form thread pool
-    mWorkQueue = mThreadPool.getQueue();
+    blockingQueue = threadPool.getQueue();
     // Creates a handler for subscribe at UI thread
     handler = new ThreadHandler(this, Looper.getMainLooper());
   }
@@ -138,7 +138,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     BaseThreadTask threadTask = null;
     if (builder.useRecycleTask) {
       // Gets a task from the pool of tasks, returning null if the pool is empty
-      threadTask = mThreadTaskWorkQueue.poll();
+      threadTask = taskQueue.poll();
     }
 
     // If the queue was empty, create a new task instead
@@ -152,13 +152,13 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     builder.runnable.setLog(isLog);
     builder.runnable.setRunnableObjectMethods(threadTask);
     threadTask.initializeTask(this);
-    if (mThreadPool instanceof ScheduledThreadPoolExecutor) {
+    if (threadPool instanceof ScheduledThreadPoolExecutor) {
       builder.runnable.setExecuteStartTime(System.currentTimeMillis());
-      ((ScheduledThreadPoolExecutor) mThreadPool).schedule(builder.runnable, builder.delayTime,
+      ((ScheduledThreadPoolExecutor) threadPool).schedule(builder.runnable, builder.delayTime,
           TimeUnit.MILLISECONDS);
     } else {
       builder.runnable.setDelayTime(builder.delayTime);
-      mThreadPool.execute(builder.runnable);
+      threadPool.execute(builder.runnable);
     }
 
     return threadTask;
@@ -181,7 +181,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
           thread.interrupt();
           // Removes the runnable from the ThreadPool. This opens a Thread in the
           // ThreadPool's work queue, allowing a task in the queue to start.
-          mThreadPool.remove(threadTask.getRunnableObject());
+          threadPool.remove(threadTask.getRunnableObject());
         }
       }
     }
@@ -190,17 +190,17 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   /**
    * Cancel the thread that is ing awaiting in queue
    */
-  public void cancelAllWork() {
+  public void cancelAwaitingWork() {
     // Creates an array of tasks that's the same size as the task work queue
-    BaseRunnable[] taskArray = new BaseRunnable[mWorkQueue.size()];
+    BaseRunnable[] taskArray = new BaseRunnable[blockingQueue.size()];
     // Populates the array with the task objects in the queue
-    mWorkQueue.toArray(taskArray);
+    blockingQueue.toArray(taskArray);
     // Locks on the singleton to ensure that other processes aren't mutating Threads, then
     // iterates over the array of tasks and interrupts the task's current Thread.
     synchronized (this) {
       // Iterates over the array of tasks
       for (BaseRunnable aTaskArray : taskArray) {
-        mWorkQueue.remove(aTaskArray);
+        blockingQueue.remove(aTaskArray);
       }
     }
   }
@@ -213,49 +213,59 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
    */
   private void recycleTask(BaseThreadTask threadTask) {
     // Puts the task object back into the queue for re-use.
-    mThreadTaskWorkQueue.offer(threadTask);
+    taskQueue.offer(threadTask);
   }
 
   /**
    * Is thread pool shut down
    */
   public boolean isShutdown() {
-    return mThreadPool.isShutdown();
+    return threadPool.isShutdown();
   }
 
   /**
    * Shuts down thread pool
+   *
+   * @param awaitTime to wait thread pool terminate
    */
-  public void shutDownThreadPool() {
-    mThreadPool.shutdown();
-  }
+  public void shutdownAndAwaitTermination(long awaitTime) {
+    // At least wait 1 second
+    if (awaitTime < 1000) {
+      awaitTime = 1000;
+    }
 
-  /**
-   * Shuts down now thread pool
-   */
-  public void shutDownNowThreadPool() {
-    mThreadPool.shutdownNow();
+    cancelAwaitingWork();
+    threadPool.shutdown();
+    try {
+      if (!threadPool.awaitTermination(awaitTime, TimeUnit.MILLISECONDS)) {
+        cancelAwaitingWork();
+        threadPool.shutdownNow();
+      }
+    } catch (InterruptedException e) {
+      cancelAwaitingWork();
+      threadPool.shutdownNow();
+    }
   }
 
   /**
    * Gets the active count in thread pool
    */
   public int getActiveCount() {
-    return mThreadPool.getActiveCount();
+    return threadPool.getActiveCount();
   }
 
   /**
    * Gets the completed task count in thread pool
    */
   public long getCompletedTaskCount() {
-    return mThreadPool.getCompletedTaskCount();
+    return threadPool.getCompletedTaskCount();
   }
 
   /**
    * Gets the task count in thread pool
    */
   public long getTaskCount() {
-    return mThreadPool.getTaskCount();
+    return threadPool.getTaskCount();
   }
 
   /**
@@ -264,7 +274,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
   public void createMonitor(int period) {
     if (monitorThread == null) {
       ExecutorService cachedThreadPool = Executors.newSingleThreadExecutor();
-      monitorThread = new PoolMonitorThread(mThreadPool, period);
+      monitorThread = new PoolMonitorThread(threadPool, period);
       cachedThreadPool.execute(monitorThread);
     }
   }
@@ -300,7 +310,7 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
     }
   }
 
-  @Override public void clearAllObserver() {
+  @Override public void clearObservers() {
     observers.clear();
   }
 
@@ -366,8 +376,6 @@ public abstract class BaseThreadManager<T extends ThreadPoolExecutor>
           break;
 
         default:
-          // Otherwise, calls the super method
-          super.handleMessage(inputMessage);
           break;
       }
     }

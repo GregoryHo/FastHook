@@ -8,7 +8,7 @@ package com.ns.greg.library.fasthook.functions;
  */
 public class EasyRun0<T> implements BaseRun {
 
-  private T t;
+  private final T t;
 
   public EasyRun0(T t) {
     this.t = t;
