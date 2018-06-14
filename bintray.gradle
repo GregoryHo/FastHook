@@ -1,6 +1,12 @@
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
+Properties properties = new Properties()
+File localProperties = project.file("local.properties")
+if (localProperties.exists()) {
+  properties.load(localProperties.newDataInputStream())
+}
+
 // Home page url
 def siteUrl = 'https://github.com/GregoryHo/FastHook'
 // git repository url
@@ -39,19 +45,23 @@ install {
     }
   }
 }
+
 task sourcesJar(type: Jar) {
   from android.sourceSets.main.java.srcDirs
   classifier = 'sources'
 }
+
 task javadoc(type: Javadoc) {
   options.encoding = 'UTF-8'
   source = android.sourceSets.main.java.srcDirs
   classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
+
 task javadocJar(type: Jar, dependsOn: javadoc) {
   classifier = 'javadoc'
   from javadoc.destinationDir
 }
+
 javadoc {
   options {
     encoding 'UTF-8'
@@ -60,12 +70,12 @@ javadoc {
     version true
   }
 }
+
 artifacts {
   archives javadocJar
   archives sourcesJar
 }
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 bintray {
   user = properties.getProperty("bintray.user")
   key = properties.getProperty("bintray.apikey")
