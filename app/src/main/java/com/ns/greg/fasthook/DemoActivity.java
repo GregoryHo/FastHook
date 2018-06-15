@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 import com.ns.greg.fasthook.handle.DemoHook;
-import com.ns.greg.library.fasthook.BaseThreadTask;
 import com.ns.greg.library.fasthook.HookPlugins;
 import com.ns.greg.library.fasthook.functions.BaseRun;
 import com.ns.greg.library.fasthook.functions.EasyRun1;
@@ -16,8 +15,6 @@ import com.ns.greg.library.fasthook.observer.IThreadManagerInterface;
  */
 public class DemoActivity extends AppCompatActivity {
 
-  private BaseThreadTask job0;
-  private BaseThreadTask job1;
   private CustomObserver customObserver;
 
   @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,7 +42,6 @@ public class DemoActivity extends AppCompatActivity {
 
   @Override protected void onDestroy() {
     super.onDestroy();
-
     // UnSubscribe
     if (customObserver != null) {
       DemoHook.getInstance().removeObserver(customObserver);
