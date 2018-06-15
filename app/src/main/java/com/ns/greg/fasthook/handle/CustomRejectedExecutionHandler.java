@@ -1,4 +1,4 @@
-package com.ns.greg.fasthook.threadpool;
+package com.ns.greg.fasthook.handle;
 
 import com.ns.greg.library.fasthook.executionHandler.BaseRejectedExecutionHandler;
 import com.ns.greg.library.fasthook.BaseRunnable;

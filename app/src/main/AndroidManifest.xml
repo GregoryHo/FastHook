@@ -10,7 +10,7 @@
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
 
-    <activity android:name="com.ns.greg.fasthook.ThreadActivity">
+    <activity android:name="com.ns.greg.fasthook.DemoActivity">
 
       <intent-filter>
         <action android:name="android.intent.action.MAIN"></action>
