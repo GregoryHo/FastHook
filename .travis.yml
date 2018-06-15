@@ -21,6 +21,7 @@ android:
     - build-tools-$ANDROID_BUILD_TOOLS_VERSION
     - extra-android-m2repository
     - extra-android-support
+    - sys-img-${ANDROID_ABI}-${ANDROID_EMULATOR_TARGET}
   licenses:
     - android-sdk-license-.+
     - '.+'
